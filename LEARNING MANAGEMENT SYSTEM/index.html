@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduNexus — College Learning Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-950: #0a1628;
+    --blue-900: #0d1f3c;
+    --blue-800: #1a3358;
+    --blue-700: #1e4080;
+    --blue-600: #1d5bac;
+    --blue-500: #2070d8;
+    --blue-400: #4a8fe8;
+    --blue-300: #7ab0f0;
+    --blue-200: #b8d4f8;
+    --blue-100: #ddeeff;
+    --blue-50: #f0f7ff;
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-500: #64748b;
+    --gray-700: #334155;
+    --gray-900: #0f172a;
+    --accent-teal: #06b6d4;
+    --accent-emerald: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --shadow-sm: 0 1px 3px rgba(13,31,60,0.08), 0 1px 2px rgba(13,31,60,0.05);
+    --shadow-md: 0 4px 16px rgba(13,31,60,0.10), 0 2px 6px rgba(13,31,60,0.06);
+    --shadow-lg: 0 10px 40px rgba(13,31,60,0.13), 0 4px 12px rgba(13,31,60,0.07);
+    --shadow-xl: 0 20px 60px rgba(13,31,60,0.18);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 260px; height: 100vh;
+    background: var(--blue-900);
+    display: flex; flex-direction: column;
+    z-index: 100;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    transition: transform .3s ease;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-logo .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+  .sidebar-logo .logo-sub {
+    font-size: 11px; font-weight: 500;
+    color: var(--blue-300);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .sidebar-user {
+    padding: 20px 24px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .user-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-500), var(--accent-teal));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700; color: var(--white);
+    flex-shrink: 0;
+  }
+  .user-info .user-name { font-size: 14px; font-weight: 600; color: var(--white); }
+  .user-info .user-role {
+    font-size: 11px; color: var(--blue-300);
+    background: rgba(255,255,255,0.08);
+    padding: 2px 8px; border-radius: 20px;
+    display: inline-block; margin-top: 3px;
+  }
+
+  .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+  .nav-section-label {
+    font-size: 10px; font-weight: 600;
+    color: var(--blue-400); letter-spacing: 1.8px; text-transform: uppercase;
+    padding: 8px 24px 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 24px; cursor: pointer;
+    color: rgba(255,255,255,0.65);
+    font-size: 14px; font-weight: 500;
+    transition: all .18s ease;
+    border-left: 3px solid transparent;
+    position: relative;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: var(--white); }
+  .nav-item.active {
+    background: rgba(32,112,216,0.25);
+    color: var(--white);
+    border-left-color: var(--blue-400);
+  }
+  .nav-item .nav-icon { font-size: 18px; width: 22px; text-align: center; }
+  .nav-badge {
+    margin-left: auto; background: var(--blue-500);
+    color: var(--white); font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 20px; min-width: 20px; text-align: center;
+  }
+
+  .sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 12px; color: var(--blue-300);
+  }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: 260px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--white);
+    padding: 0 32px;
+    height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .page-title { font-size: 20px; font-weight: 600; color: var(--gray-900); }
+  .breadcrumb { font-size: 13px; color: var(--gray-500); }
+  .breadcrumb span { color: var(--blue-600); font-weight: 500; }
+
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--gray-100); border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 8px 14px; width: 240px;
+    transition: all .18s;
+  }
+  .search-bar:focus-within { border-color: var(--blue-400); background: var(--white); }
+  .search-bar input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--gray-700); outline: none; width: 100%; }
+  .search-bar .search-icon { color: var(--gray-500); font-size: 15px; }
+
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    background: var(--gray-100); border: 1.5px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 17px; color: var(--gray-700);
+    transition: all .18s; position: relative;
+  }
+  .icon-btn:hover { background: var(--blue-50); border-color: var(--blue-300); color: var(--blue-600); }
+  .icon-btn .dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-rose); border: 1.5px solid var(--white);
+  }
+
+  /* ── CONTENT ── */
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; animation: fadeInUp .35s ease; }
+  @keyframes fadeInUp {
+    from { opacity:0; transform: translateY(14px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 20px 24px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .card-title { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+  .card-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 600;
+    cursor: pointer; border: none; transition: all .18s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+    color: var(--white);
+    box-shadow: 0 2px 8px rgba(30,64,128,0.25);
+  }
+  .btn-primary:hover { background: linear-gradient(135deg, var(--blue-700), var(--blue-600)); box-shadow: 0 4px 14px rgba(30,64,128,0.32); transform: translateY(-1px); }
+  .btn-secondary {
+    background: var(--white); color: var(--blue-600);
+    border: 1.5px solid var(--blue-200);
+  }
+  .btn-secondary:hover { background: var(--blue-50); border-color: var(--blue-400); }
+  .btn-ghost { background: transparent; color: var(--gray-600); }
+  .btn-ghost:hover { background: var(--gray-100); }
+  .btn-sm { padding: 6px 12px; font-size: 12.5px; }
+  .btn-danger { background: var(--accent-rose); color: var(--white); }
+
+  /* ── STATS ROW ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-sm);
+    transition: all .2s; cursor: default;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .stat-card.blue::before { background: linear-gradient(90deg, var(--blue-500), var(--blue-400)); }
+  .stat-card.teal::before { background: linear-gradient(90deg, var(--accent-teal), #22d3ee); }
+  .stat-card.emerald::before { background: linear-gradient(90deg, var(--accent-emerald), #34d399); }
+  .stat-card.amber::before { background: linear-gradient(90deg, var(--accent-amber), #fbbf24); }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .stat-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 14px;
+  }
+  .stat-icon.blue { background: var(--blue-50); color: var(--blue-600); }
+  .stat-icon.teal { background: #ecfeff; color: var(--accent-teal); }
+  .stat-icon.emerald { background: #ecfdf5; color: var(--accent-emerald); }
+  .stat-icon.amber { background: #fffbeb; color: var(--accent-amber); }
+  .stat-value { font-size: 28px; font-weight: 700; color: var(--gray-900); line-height: 1; }
+  .stat-label { font-size: 13px; color: var(--gray-500); margin-top: 5px; font-weight: 500; }
+  .stat-change { font-size: 12px; color: var(--accent-emerald); font-weight: 600; margin-top: 6px; }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+  /* ── COURSE CARDS ── */
+  .course-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    overflow: hidden; cursor: pointer;
+    transition: all .22s;
+    box-shadow: var(--shadow-sm);
+  }
+  .course-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--blue-200); }
+  .course-card-header {
+    height: 110px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px;
+  }
+  .course-card-header .badge-top {
+    position: absolute; top: 12px; right: 12px;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px; color: var(--white);
+  }
+  .course-card-body { padding: 18px; }
+  .course-code { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--blue-600); margin-bottom: 4px; }
+  .course-name { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px; line-height: 1.3; }
+  .course-teacher { font-size: 12.5px; color: var(--gray-500); margin-bottom: 12px; }
+  .course-progress-bar { background: var(--gray-100); border-radius: 20px; height: 5px; margin-bottom: 8px; overflow: hidden; }
+  .course-progress-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--blue-500), var(--accent-teal)); }
+  .course-meta { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--gray-500); }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--gray-50); border-bottom: 2px solid var(--gray-200); }
+  th { padding: 12px 16px; font-size: 12px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .8px; text-align: left; white-space: nowrap; }
+  td { padding: 14px 16px; font-size: 14px; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--blue-50); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  }
+  .badge-blue { background: var(--blue-50); color: var(--blue-700); }
+  .badge-emerald { background: #ecfdf5; color: #065f46; }
+  .badge-amber { background: #fffbeb; color: #92400e; }
+  .badge-rose { background: #fff1f2; color: #9f1239; }
+  .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+  .badge-teal { background: #ecfeff; color: #155e75; }
+
+  /* ── ANNOUNCEMENT ── */
+  .announcement-item {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: background .15s;
+  }
+  .announcement-item:hover { background: var(--blue-50); }
+  .announcement-item:last-child { border-bottom: none; }
+  .ann-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: var(--white); flex-shrink: 0;
+  }
+  .ann-body { flex: 1; }
+  .ann-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .ann-author { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .ann-time { font-size: 12px; color: var(--gray-400); }
+  .ann-title { font-size: 14.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 4px; }
+  .ann-text { font-size: 13.5px; color: var(--gray-600); line-height: 1.55; }
+
+  /* ── ASSIGNMENT ── */
+  .assignment-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .assignment-item:last-child { border-bottom: none; }
+  .assignment-item:hover { background: var(--gray-50); }
+  .asn-icon {
+    width: 42px; height: 42px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .asn-info { flex: 1; }
+  .asn-title { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .asn-course { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .asn-due { font-size: 12px; color: var(--gray-500); text-align: right; }
+  .asn-due .due-date { font-weight: 600; color: var(--gray-800); margin-bottom: 3px; }
+  .asn-due .due-urgent { color: var(--accent-rose); }
+
+  /* ── GRADEBOOK ── */
+  .grade-pill {
+    display: inline-block; padding: 5px 14px; border-radius: 20px;
+    font-size: 14px; font-weight: 700; min-width: 52px; text-align: center;
+  }
+  .grade-A { background: #ecfdf5; color: #065f46; }
+  .grade-B { background: var(--blue-50); color: var(--blue-800); }
+  .grade-C { background: #fffbeb; color: #92400e; }
+  .grade-D { background: #fff1f2; color: #9f1239; }
+  .grade-F { background: #fdf2f8; color: #831843; }
+
+  /* ── LIBRARY ── */
+  .book-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200); overflow: hidden;
+    transition: all .2s; cursor: pointer; box-shadow: var(--shadow-sm);
+  }
+  .book-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .book-cover {
+    height: 130px; display: flex; align-items: center; justify-content: center;
+    font-size: 44px; position: relative;
+  }
+  .book-cover .book-status {
+    position: absolute; bottom: 10px; right: 10px;
+    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  }
+  .book-info { padding: 14px 16px; }
+  .book-title { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 3px; line-height: 1.3; }
+  .book-author { font-size: 12px; color: var(--gray-500); margin-bottom: 8px; }
+  .book-meta { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+  .book-copies { color: var(--gray-600); }
+
+  /* ── FORM ── */
+  .form-group { margin-bottom: 18px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 10px 14px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--gray-200); background: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--gray-900);
+    outline: none; transition: all .18s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--blue-400); box-shadow: 0 0 0 3px rgba(32,112,216,0.1); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,22,40,0.6);
+    display: none; align-items: center; justify-content: center; z-index: 1000;
+    backdrop-filter: blur(3px);
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  .modal {
+    background: var(--white); border-radius: var(--radius-xl);
+    padding: 30px; width: 520px; max-width: 92vw; max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    animation: slideUp .25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .modal-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+  .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray-400); transition: color .15s; }
+  .modal-close:hover { color: var(--gray-700); }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); margin-bottom: 22px; }
+  .tab {
+    padding: 11px 20px; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--gray-500);
+    border-bottom: 2px solid transparent; margin-bottom: -2px;
+    transition: all .15s;
+  }
+  .tab:hover { color: var(--blue-600); }
+  .tab.active { color: var(--blue-600); border-bottom-color: var(--blue-600); }
+
+  /* ── PROGRESS ── */
+  .progress-bar-full { background: var(--gray-100); border-radius: 8px; height: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--blue-500), var(--blue-400)); }
+
+  /* ── WELCOME BANNER ── */
+  .welcome-banner {
+    background: linear-gradient(135deg, var(--blue-800) 0%, var(--blue-600) 60%, var(--accent-teal) 100%);
+    border-radius: var(--radius-xl);
+    padding: 28px 32px;
+    color: var(--white);
+    margin-bottom: 28px;
+    position: relative; overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .welcome-banner::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .welcome-banner::after {
+    content: ''; position: absolute; bottom: -60px; right: 80px;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .welcome-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .welcome-sub { font-size: 14.5px; opacity: .8; margin-bottom: 20px; }
+  .welcome-actions { display: flex; gap: 10px; position: relative; z-index: 1; }
+  .btn-white { background: var(--white); color: var(--blue-700); font-weight: 700; }
+  .btn-white:hover { background: var(--blue-50); }
+  .btn-outline-white { background: transparent; border: 1.5px solid rgba(255,255,255,0.5); color: var(--white); }
+  .btn-outline-white:hover { background: rgba(255,255,255,0.12); }
+
+  /* ── LIBRARY SEARCH ── */
+  .lib-search-bar {
+    display: flex; gap: 12px; margin-bottom: 22px;
+  }
+  .lib-search-bar .form-input { flex: 1; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--gray-400); }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 14px; }
+  .empty-state h3 { font-size: 17px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+  .empty-state p { font-size: 13.5px; }
+
+  /* ── PROFILE ── */
+  .profile-header {
+    background: linear-gradient(135deg, var(--blue-900), var(--blue-700));
+    border-radius: var(--radius-xl); padding: 28px 28px 24px;
+    margin-bottom: 24px; color: var(--white); display: flex; align-items: center; gap: 22px;
+  }
+  .profile-avatar-lg {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-400), var(--accent-teal));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; font-weight: 700; color: var(--white);
+    border: 3px solid rgba(255,255,255,0.2); flex-shrink: 0;
+  }
+  .profile-details .profile-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .profile-details .profile-id { font-size: 13px; opacity: .75; margin-top: 3px; }
+  .profile-details .profile-tags { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .profile-tag { font-size: 12px; font-weight: 600; padding: 3px 12px; border-radius: 20px; background: rgba(255,255,255,0.15); color: var(--white); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+  /* ── SECTION TITLES ── */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .section-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+  .section-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+  /* ── ACTIVITY TIMELINE ── */
+  .activity-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue-400); margin-top: 5px; flex-shrink: 0; }
+  .activity-content { flex: 1; }
+  .activity-text { font-size: 13.5px; color: var(--gray-700); }
+  .activity-time { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+  /* ── CHIP FILTER ── */
+  .chip-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .chip {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
+    border: 1.5px solid var(--gray-200); background: var(--white); color: var(--gray-600);
+    transition: all .15s;
+  }
+  .chip:hover { border-color: var(--blue-300); color: var(--blue-600); }
+  .chip.active { background: var(--blue-600); color: var(--white); border-color: var(--blue-600); }
+
+  /* ── NOTIFICATION DOT ── */
+  .unread { font-weight: 700; color: var(--gray-900) !important; }
+
+  /* ── CALENDAR WIDGET ── */
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-day-name { font-size: 11px; font-weight: 700; color: var(--gray-400); text-align: center; padding: 4px; text-transform: uppercase; }
+  .cal-day {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; border-radius: 8px; cursor: pointer;
+    transition: all .15s; color: var(--gray-700);
+  }
+  .cal-day:hover { background: var(--blue-50); color: var(--blue-600); }
+  .cal-day.today { background: var(--blue-600); color: var(--white); font-weight: 700; }
+  .cal-day.has-event { position: relative; }
+  .cal-day.has-event::after { content:''; position: absolute; bottom: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-amber); }
+  .cal-day.inactive { color: var(--gray-300); }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-month { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+
+  /* ── SEPARATOR ── */
+  .sep { height: 1px; background: var(--gray-100); margin: 0 -24px; }
+
+  /* ── SUMMARY ROW ── */
+  .sum-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .sum-item { font-size: 13px; color: var(--gray-600); }
+  .sum-item strong { color: var(--gray-900); }
+
+  /* ── TAG ── */
+  .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+
+  /* ── HOVER SHOW ── */
+  .row-actions { opacity: 0; transition: opacity .15s; }
+  tr:hover .row-actions { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">EduNexus</div>
+    <div class="logo-sub">College Management System</div>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-avatar">AK</div>
+    <div class="user-info">
+      <div class="user-name">Arjun Tendulkar</div>
+      <div class="user-role">Student · CSE-3B</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="navigate('dashboard')">
+      <span class="nav-icon">🏠</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('courses')">
+      <span class="nav-icon">📚</span> My Courses
+    </div>
+    <div class="nav-item" onclick="navigate('assignments')">
+      <span class="nav-icon">📝</span> Assignments
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="navigate('gradebook')">
+      <span class="nav-icon">📊</span> Gradebook
+    </div>
+    <div class="nav-section-label" style="margin-top:8px;">Campus</div>
+    <div class="nav-item" onclick="navigate('announcements')">
+      <span class="nav-icon">📢</span> Announcements
+      <span class="nav-badge">5</span>
+    </div>
+    <div class="nav-item" onclick="navigate('library')">
+      <span class="nav-icon">🏛️</span> Library
+    </div>
+    <div class="nav-section-label" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="navigate('profile')">
+      <span class="nav-icon">👤</span> Profile
+    </div>
+    <div class="nav-item" onclick="navigate('settings')">
+      <span class="nav-icon">⚙️</span> Settings
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    EduNexus v3.2 · Academic Year 2025–26
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════ -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="page-title" id="pageTitle">Dashboard</div>
+        <div class="breadcrumb">Home → <span id="breadcrumbCurrent">Dashboard</span></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search courses, books, announcements…">
+      </div>
+      <div class="icon-btn" onclick="openModal('notifModal')">🔔<span class="dot"></span></div>
+      <div class="icon-btn">📅</div>
+      <div class="icon-btn" onclick="navigate('profile')" style="background:linear-gradient(135deg,var(--blue-600),var(--blue-400));color:white;font-weight:700;font-size:15px;">AK</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div id="view-dashboard" class="view active">
+      <div class="welcome-banner">
+        <div style="position:relative;z-index:1">
+          <div class="welcome-title">Good morning, Arjun! 👋</div>
+          <div class="welcome-sub">You have 3 pending assignments and 2 upcoming exams this week.</div>
+          <div class="welcome-actions">
+            <button class="btn btn-white" onclick="navigate('assignments')">📝 View Assignments</button>
+            <button class="btn btn-outline-white" onclick="navigate('courses')">📚 My Courses</button>
+          </div>
+        </div>
+        <div style="position:absolute;right:32px;top:50%;transform:translateY(-50%);font-size:80px;opacity:0.12;z-index:0;">🎓</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon blue">📚</div>
+          <div class="stat-value">6</div>
+          <div class="stat-label">Enrolled Courses</div>
+          <div class="stat-change">↑ 2 new this semester</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-icon teal">📝</div>
+          <div class="stat-value">3</div>
+          <div class="stat-label">Pending Assignments</div>
+          <div class="stat-change" style="color:var(--accent-rose)">⚠ Due this week</div>
+        </div>
+        <div class="stat-card emerald">
+          <div class="stat-icon emerald">📊</div>
+          <div class="stat-value">8.4</div>
+          <div class="stat-label">Current CGPA</div>
+          <div class="stat-change">↑ 0.2 from last sem</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon amber">🏛️</div>
+          <div class="stat-value">2</div>
+          <div class="stat-label">Books Issued</div>
+          <div class="stat-change">Due in 7 days</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:22px;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Upcoming Deadlines</div>
+              <div class="card-subtitle">Next 7 days</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="navigate('assignments')">View All</button>
+          </div>
+          <div>
+            <div class="assignment-item">
+              <div class="asn-icon" style="background:#fef3c7;">📋</div>
+              <div class="asn-info">
+                <div class="asn-title">Data Structures Lab Report</div>
+                <div class="asn-course">CS301 — Data Structures</div>
+              </div>
+              <div class="asn-due">
+                <div class="due-date due-urgent">Tomorrow</div>
+                <span class="badge badge-rose">Urgent</span>
+              </div>
+            </div>
+            <div class="assignment-item">
+              <div class="asn-icon" style="background:#ede9fe;">🧮</div>
+              <div class="asn-info">
+                <div class="asn-title">Calculus Problem Set 4</div>
+                <div class="asn-course">MA201 — Engineering Mathematics</div>
+              </div>
+              <div class="asn-due">
+                <div class="due-date">Mar 22, 2026</div>
+                <span class="badge badge-amber">3 Days</span>
+              </div>
+            </div>
+            <div class="assignment-item">
+              <div class="asn-icon" style="background:#ecfdf5;">📖</div>
+              <div class="asn-info">
+                <div class="asn-title">Essay: Networking Fundamentals</div>
+                <div class="asn-course">CS305 — Computer Networks</div>
+              </div>
+              <div class="asn-due">
+                <div class="due-date">Mar 25, 2026</div>
+                <span class="badge badge-blue">6 Days</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">March 2026</div>
+              <div class="card-subtitle">Academic calendar</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px;">
+            <div class="cal-header">
+              <span style="font-size:20px;cursor:pointer;color:var(--gray-400)">‹</span>
+              <div class="cal-month">March 2026</div>
+              <span style="font-size:20px;cursor:pointer;color:var(--gray-400)">›</span>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-day-name">Su</div><div class="cal-day-name">Mo</div><div class="cal-day-name">Tu</div><div class="cal-day-name">We</div><div class="cal-day-name">Th</div><div class="cal-day-name">Fr</div><div class="cal-day-name">Sa</div>
+              <div class="cal-day inactive">23</div><div class="cal-day inactive">24</div><div class="cal-day inactive">25</div><div class="cal-day inactive">26</div><div class="cal-day inactive">27</div><div class="cal-day inactive">28</div><div class="cal-day">1</div>
+              <div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div>
+              <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div>
+              <div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day today has-event">19</div><div class="cal-day">20</div><div class="cal-day has-event">21</div><div class="cal-day">22</div>
+              <div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day has-event">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div>
+              <div class="cal-day">30</div><div class="cal-day">31</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Announcements</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="navigate('announcements')">See All</button>
+          </div>
+          <div>
+            <div class="announcement-item">
+              <div class="ann-avatar" style="background:linear-gradient(135deg,#2070d8,#4a8fe8)">RP</div>
+              <div class="ann-body">
+                <div class="ann-title unread">Mid-Semester Exam Schedule Released</div>
+                <div class="ann-text">Exams begin April 5. Check the portal for room allocations and timing.</div>
+                <div class="ann-time" style="margin-top:6px;">Prof. R. Patel · 2 hours ago</div>
+              </div>
+            </div>
+            <div class="announcement-item">
+              <div class="ann-avatar" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)">HoD</div>
+              <div class="ann-body">
+                <div class="ann-title">Internship Drive — TechCorp India</div>
+                <div class="ann-text">Students in 6th semester are eligible. Last date to apply: March 26.</div>
+                <div class="ann-time" style="margin-top:6px;">Department · 1 day ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Recent Activity</div></div>
+          </div>
+          <div style="padding:12px 24px;">
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent-emerald)"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Assignment submitted:</strong> Algorithm Analysis Report</div>
+                <div class="activity-time">Today, 9:14 AM</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--blue-400)"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Grade posted:</strong> CS301 Quiz 3 — 92/100</div>
+                <div class="activity-time">Yesterday, 4:30 PM</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent-amber)"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Book issued:</strong> "Introduction to Algorithms" — CLRS</div>
+                <div class="activity-time">Mar 16, 2026</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent-teal)"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Enrolled in:</strong> Elective — Machine Learning Basics</div>
+                <div class="activity-time">Mar 14, 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COURSES ── -->
+    <div id="view-courses" class="view">
+      <div class="section-header" style="margin-bottom:20px;">
+        <div>
+          <div class="section-title">My Courses</div>
+          <div class="section-subtitle">Semester 5 — Academic Year 2025–26</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('courseModal')">+ Browse Electives</button>
+      </div>
+      <div class="chip-filter">
+        <div class="chip active">All Courses</div>
+        <div class="chip">In Progress</div>
+        <div class="chip">Completed</div>
+        <div class="chip">Core</div>
+        <div class="chip">Electives</div>
+      </div>
+      <div class="grid-auto">
+        <div class="course-card">
+          <div class="course-card-header" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">
+            💻
+            <span class="badge-top" style="background:var(--blue-600)">Core</span>
+          </div>
+          <div class="course-card-body">
+            <div class="course-code">CS301</div>
+            <div class="course-name">Data Structures & Algorithms</div>
+            <div class="course-teacher">👨‍🏫 Prof. Ramesh Patel</div>
+            <div class="course-progress-bar"><div class="course-progress-fill" style="width:68%"></div></div>
+            <div class="course-meta"><span>68% complete</span><span>3 assignments due</span></div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-card-header" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
+            📡
+            <span class="badge-top" style="background:var(--accent-emerald)">Core</span>
+          </div>
+          <div class="course-card-body">
+            <div class="course-code">CS305</div>
+            <div class="course-name">Computer Networks</div>
+            <div class="course-teacher">👩‍🏫 Dr. Sunita Mehra</div>
+            <div class="course-progress-bar"><div class="course-progress-fill" style="width:55%"></div></div>
+            <div class="course-meta"><span>55% complete</span><span>1 assignment due</span></div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-card-header" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">
+            🧮
+            <span class="badge-top" style="background:#ec4899">Core</span>
+          </div>
+          <div class="course-card-body">
+            <div class="course-code">MA201</div>
+            <div class="course-name">Engineering Mathematics III</div>
+            <div class="course-teacher">👨‍🏫 Prof. A. Sharma</div>
+            <div class="course-progress-bar"><div class="course-progress-fill" style="width:72%"></div></div>
+            <div class="course-meta"><span>72% complete</span><span>1 assignment due</span></div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-card-header" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">
+            🖥️
+            <span class="badge-top" style="background:var(--accent-amber)">Lab</span>
+          </div>
+          <div class="course-card-body">
+            <div class="course-code">CS302</div>
+            <div class="course-name">Operating Systems</div>
+            <div class="course-teacher">👩‍🏫 Dr. Priya Nair</div>
+            <div class="course-progress-bar"><div class="course-progress-fill" style="width:45%"></div></div>
+            <div class="course-meta"><span>45% complete</span><span>0 assignments due</span></div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-card-header" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">
+            🤖
+            <span class="badge-top" style="background:#7c3aed">Elective</span>
+          </div>
+          <div class="course-card-body">
+            <div class="course-code">CS401E</div>
+            <div class="course-name">Machine Learning Basics</div>
+            <div class="course-teacher">👨‍🏫 Dr. Vikram Singh</div>
+            <div class="course-progress-bar"><div class="course-progress-fill" style="width:30%"></div></div>
+            <div class="course-meta"><span>30% complete</span><span>0 assignments due</span></div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-card-header" style="background:linear-gradient(135deg,#ccfbf1,#99f6e4)">
+            🗄️
+            <span class="badge-top" style="background:var(--accent-teal)">Core</span>
+          </div>
+          <div class="course-card-body">
+            <div class="course-code">CS303</div>
+            <div class="course-name">Database Management Systems</div>
+            <div class="course-teacher">👩‍🏫 Prof. Kavita Reddy</div>
+            <div class="course-progress-bar"><div class="course-progress-fill" style="width:80%"></div></div>
+            <div class="course-meta"><span>80% complete</span><span>0 assignments due</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ASSIGNMENTS ── -->
+    <div id="view-assignments" class="view">
+      <div class="section-header" style="margin-bottom:20px;">
+        <div>
+          <div class="section-title">Assignments</div>
+          <div class="section-subtitle">All assignments across your courses</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('submitModal')">📤 Submit Assignment</button>
+      </div>
+      <div class="tabs">
+        <div class="tab active">Pending (3)</div>
+        <div class="tab">Submitted (8)</div>
+        <div class="tab">Graded (14)</div>
+      </div>
+      <div class="card">
+        <div class="assignment-item">
+          <div class="asn-icon" style="background:#fef3c7;">📋</div>
+          <div class="asn-info">
+            <div class="asn-title">Data Structures Lab Report — Linked Lists</div>
+            <div class="asn-course">CS301 · Data Structures & Algorithms · Prof. Ramesh Patel</div>
+            <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <span class="badge badge-rose">Due Tomorrow</span>
+              <span class="tag" style="background:var(--gray-100);color:var(--gray-600)">PDF · Max 10MB</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+            <span class="badge badge-amber">Pending</span>
+            <button class="btn btn-primary btn-sm" onclick="openModal('submitModal')">Submit</button>
+          </div>
+        </div>
+        <div class="assignment-item">
+          <div class="asn-icon" style="background:#ede9fe;">🧮</div>
+          <div class="asn-info">
+            <div class="asn-title">Calculus Problem Set 4 — Integration</div>
+            <div class="asn-course">MA201 · Engineering Mathematics III · Prof. A. Sharma</div>
+            <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+              <span class="badge badge-amber">Due Mar 22</span>
+              <span class="tag" style="background:var(--gray-100);color:var(--gray-600)">PDF / Images</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+            <span class="badge badge-amber">Pending</span>
+            <button class="btn btn-primary btn-sm" onclick="openModal('submitModal')">Submit</button>
+          </div>
+        </div>
+        <div class="assignment-item">
+          <div class="asn-icon" style="background:#ecfdf5;">📖</div>
+          <div class="asn-info">
+            <div class="asn-title">Essay: Networking Protocols — OSI Model Analysis</div>
+            <div class="asn-course">CS305 · Computer Networks · Dr. Sunita Mehra</div>
+            <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+              <span class="badge badge-blue">Due Mar 25</span>
+              <span class="tag" style="background:var(--gray-100);color:var(--gray-600)">1500–2000 words</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+            <span class="badge badge-blue">Pending</span>
+            <button class="btn btn-primary btn-sm" onclick="openModal('submitModal')">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GRADEBOOK ── -->
+    <div id="view-gradebook" class="view">
+      <div class="section-header" style="margin-bottom:20px;">
+        <div>
+          <div class="section-title">Gradebook</div>
+          <div class="section-subtitle">Semester 5 — Performance Overview</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <select class="form-select" style="width:auto;padding:7px 12px;">
+            <option>Semester 5 (Current)</option>
+            <option>Semester 4</option>
+            <option>Semester 3</option>
+          </select>
+        </div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card blue"><div class="stat-icon blue">🎯</div><div class="stat-value">8.4</div><div class="stat-label">SGPA (Current)</div></div>
+        <div class="stat-card teal"><div class="stat-icon teal">📈</div><div class="stat-value">8.2</div><div class="stat-label">CGPA Overall</div></div>
+        <div class="stat-card emerald"><div class="stat-icon emerald">✅</div><div class="stat-value">22/26</div><div class="stat-label">Graded Assignments</div></div>
+        <div class="stat-card amber"><div class="stat-icon amber">🏆</div><div class="stat-value">A</div><div class="stat-label">Top Grade this Sem</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Course-wise Grades</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Quiz 1</th>
+                <th>Quiz 2</th>
+                <th>Mid-sem</th>
+                <th>Assignments</th>
+                <th>Total</th>
+                <th>Grade</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div style="font-weight:600;color:var(--gray-900)">CS301 · Data Structures</div><div style="font-size:12px;color:var(--gray-400)">Prof. Ramesh Patel</div></td>
+                <td>18/20</td><td>19/20</td><td>62/80</td><td>45/50</td>
+                <td style="font-weight:700;color:var(--gray-900)">144/170</td>
+                <td><span class="grade-pill grade-A">A</span></td>
+                <td><span class="badge badge-emerald">On Track</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:600;color:var(--gray-900)">CS305 · Computer Networks</div><div style="font-size:12px;color:var(--gray-400)">Dr. Sunita Mehra</div></td>
+                <td>16/20</td><td>17/20</td><td>55/80</td><td>40/50</td>
+                <td style="font-weight:700;color:var(--gray-900)">128/170</td>
+                <td><span class="grade-pill grade-B">B+</span></td>
+                <td><span class="badge badge-blue">Good</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:600;color:var(--gray-900)">MA201 · Engineering Maths</div><div style="font-size:12px;color:var(--gray-400)">Prof. A. Sharma</div></td>
+                <td>15/20</td><td>14/20</td><td>58/80</td><td>43/50</td>
+                <td style="font-weight:700;color:var(--gray-900)">130/170</td>
+                <td><span class="grade-pill grade-B">B</span></td>
+                <td><span class="badge badge-blue">Good</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:600;color:var(--gray-900)">CS302 · Operating Systems</div><div style="font-size:12px;color:var(--gray-400)">Dr. Priya Nair</div></td>
+                <td>20/20</td><td>18/20</td><td>70/80</td><td>48/50</td>
+                <td style="font-weight:700;color:var(--gray-900)">156/170</td>
+                <td><span class="grade-pill grade-A">A+</span></td>
+                <td><span class="badge badge-emerald">Excellent</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:600;color:var(--gray-900)">CS303 · DBMS</div><div style="font-size:12px;color:var(--gray-400)">Prof. Kavita Reddy</div></td>
+                <td>17/20</td><td>16/20</td><td>60/80</td><td>44/50</td>
+                <td style="font-weight:700;color:var(--gray-900)">137/170</td>
+                <td><span class="grade-pill grade-B">B+</span></td>
+                <td><span class="badge badge-blue">Good</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:600;color:var(--gray-900)">CS401E · Machine Learning</div><div style="font-size:12px;color:var(--gray-400)">Dr. Vikram Singh</div></td>
+                <td>—</td><td>—</td><td>—</td><td>38/50</td>
+                <td style="font-weight:700;color:var(--gray-400)">In Progress</td>
+                <td><span class="grade-pill" style="background:var(--gray-100);color:var(--gray-500)">—</span></td>
+                <td><span class="badge badge-gray">Ongoing</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ANNOUNCEMENTS ── -->
+    <div id="view-announcements" class="view">
+      <div class="section-header" style="margin-bottom:20px;">
+        <div>
+          <div class="section-title">Announcements</div>
+          <div class="section-subtitle">College-wide notices and updates</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('annModal')">+ Post Announcement</button>
+      </div>
+      <div class="chip-filter">
+        <div class="chip active">All</div>
+        <div class="chip">Academic</div>
+        <div class="chip">Exams</div>
+        <div class="chip">Events</div>
+        <div class="chip">Placements</div>
+        <div class="chip">Library</div>
+      </div>
+      <div class="card">
+        <div class="announcement-item">
+          <div class="ann-avatar" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">RP</div>
+          <div class="ann-body">
+            <div class="ann-header">
+              <div class="ann-author">Prof. Ramesh Patel</div>
+              <span class="badge badge-rose">Exam</span>
+              <div class="ann-time">2 hours ago</div>
+            </div>
+            <div class="ann-title unread">Mid-Semester Examination Schedule — April 2026</div>
+            <div class="ann-text">The mid-semester examinations are scheduled to begin from April 5, 2026. All students must report 30 minutes early. Room allocations will be displayed on the portal and notice boards by March 28. No electronic devices are permitted in the examination hall.</div>
+          </div>
+        </div>
+        <div class="announcement-item">
+          <div class="ann-avatar" style="background:linear-gradient(135deg,#0f766e,#14b8a6)">TnP</div>
+          <div class="ann-body">
+            <div class="ann-header">
+              <div class="ann-author">Training & Placement Cell</div>
+              <span class="badge badge-blue">Placement</span>
+              <div class="ann-time">1 day ago</div>
+            </div>
+            <div class="ann-title unread">TechCorp India Campus Drive — Pre-registration Open</div>
+            <div class="ann-text">TechCorp India is visiting for their annual campus recruitment drive. Eligible: CSE/IT 6th semester with CGPA ≥ 7.5. Pre-register at the T&P portal by March 26, 2026. Package: ₹8–12 LPA.</div>
+          </div>
+        </div>
+        <div class="announcement-item">
+          <div class="ann-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">LIB</div>
+          <div class="ann-body">
+            <div class="ann-header">
+              <div class="ann-author">Central Library</div>
+              <span class="badge badge-teal">Library</span>
+              <div class="ann-time">2 days ago</div>
+            </div>
+            <div class="ann-title">New Book Arrivals — March 2026 Batch</div>
+            <div class="ann-text">The library has received 150+ new titles including latest editions of textbooks and reference materials across all departments. Students can view and reserve books online through the Library section. Issue period: 14 days.</div>
+          </div>
+        </div>
+        <div class="announcement-item">
+          <div class="ann-avatar" style="background:linear-gradient(135deg,#b45309,#f59e0b)">ADM</div>
+          <div class="ann-body">
+            <div class="ann-header">
+              <div class="ann-author">Academic Office</div>
+              <span class="badge badge-amber">Academic</span>
+              <div class="ann-time">3 days ago</div>
+            </div>
+            <div class="ann-title">Attendance Regularization Window Open</div>
+            <div class="ann-text">Students with attendance below 75% may apply for regularization by March 31, 2026. Applications with medical certificates can be submitted to the respective HOD offices. No requests will be entertained after the deadline.</div>
+          </div>
+        </div>
+        <div class="announcement-item">
+          <div class="ann-avatar" style="background:linear-gradient(135deg,#0369a1,#38bdf8)">CSA</div>
+          <div class="ann-body">
+            <div class="ann-header">
+              <div class="ann-author">CS Association</div>
+              <span class="badge badge-emerald">Event</span>
+              <div class="ann-time">4 days ago</div>
+            </div>
+            <div class="ann-title">HackFest 2026 — Registrations Open</div>
+            <div class="ann-text">Our annual 24-hour hackathon HackFest 2026 returns on April 12–13. Open to all branches. Form teams of 2–4. Theme: AI for Social Good. Prize pool: ₹50,000. Register at hackfest.edunexus.ac.in</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LIBRARY ── -->
+    <div id="view-library" class="view">
+      <div class="section-header" style="margin-bottom:20px;">
+        <div>
+          <div class="section-title">Library Management</div>
+          <div class="section-subtitle">Browse, borrow, and manage your reading</div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-secondary" onclick="openModal('issuedModal')">📖 My Issued Books</button>
+          <button class="btn btn-primary" onclick="openModal('librarySearchModal')">🔍 Advanced Search</button>
+        </div>
+      </div>
+      <!-- Library Stats -->
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card blue"><div class="stat-icon blue">📚</div><div class="stat-value">12,450</div><div class="stat-label">Total Books</div></div>
+        <div class="stat-card teal"><div class="stat-icon teal">✅</div><div class="stat-value">9,820</div><div class="stat-label">Available</div></div>
+        <div class="stat-card emerald"><div class="stat-icon emerald">📖</div><div class="stat-value">2</div><div class="stat-label">Books Issued (You)</div></div>
+        <div class="stat-card amber"><div class="stat-icon amber">⏰</div><div class="stat-value">7 days</div><div class="stat-label">Nearest Due Date</div></div>
+      </div>
+
+      <!-- Search -->
+      <div class="lib-search-bar">
+        <input class="form-input" placeholder="Search by title, author, ISBN, or subject…" style="flex:1;">
+        <select class="form-select" style="width:160px;">
+          <option>All Departments</option>
+          <option>Computer Science</option>
+          <option>Mathematics</option>
+          <option>Electronics</option>
+          <option>Mechanical</option>
+          <option>Civil</option>
+          <option>Management</option>
+        </select>
+        <select class="form-select" style="width:130px;">
+          <option>All Types</option>
+          <option>Textbook</option>
+          <option>Reference</option>
+          <option>Journal</option>
+          <option>E-Book</option>
+        </select>
+        <button class="btn btn-primary">Search</button>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="chip-filter">
+        <div class="chip active">Featured</div>
+        <div class="chip">New Arrivals</div>
+        <div class="chip">Computer Science</div>
+        <div class="chip">Mathematics</div>
+        <div class="chip">E-Books</div>
+        <div class="chip">Journals</div>
+      </div>
+
+      <!-- Books Grid -->
+      <div class="grid-auto">
+        <div class="book-card">
+          <div class="book-cover" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">
+            📘
+            <span class="book-status" style="background:#15803d;color:white;">Available</span>
+          </div>
+          <div class="book-info">
+            <div class="book-title">Introduction to Algorithms (4th Ed.)</div>
+            <div class="book-author">Cormen, Leiserson, Rivest, Stein</div>
+            <div class="book-meta">
+              <span class="book-copies">4 copies left</span>
+              <button class="btn btn-primary btn-sm">Issue</button>
+            </div>
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-cover" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">
+            📕
+            <span class="book-status" style="background:#dc2626;color:white;">Issued</span>
+          </div>
+          <div class="book-info">
+            <div class="book-title">Computer Networks (5th Ed.)</div>
+            <div class="book-author">Andrew S. Tanenbaum</div>
+            <div class="book-meta">
+              <span class="book-copies" style="color:var(--accent-rose)">0 copies left</span>
+              <button class="btn btn-secondary btn-sm">Reserve</button>
+            </div>
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-cover" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
+            📗
+            <span class="book-status" style="background:#15803d;color:white;">Available</span>
+          </div>
+          <div class="book-info">
+            <div class="book-title">Database System Concepts (7th Ed.)</div>
+            <div class="book-author">Silberschatz, Korth, Sudarshan</div>
+            <div class="book-meta">
+              <span class="book-copies">7 copies left</span>
+              <button class="btn btn-primary btn-sm">Issue</button>
+            </div>
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-cover" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">
+            📙
+            <span class="book-status" style="background:#b45309;color:white;">Low Stock</span>
+          </div>
+          <div class="book-info">
+            <div class="book-title">Operating System Concepts (10th Ed.)</div>
+            <div class="book-author">Silberschatz, Galvin, Gagne</div>
+            <div class="book-meta">
+              <span class="book-copies" style="color:var(--accent-amber)">1 copy left</span>
+              <button class="btn btn-primary btn-sm">Issue</button>
+            </div>
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-cover" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">
+            📒
+            <span class="book-status" style="background:#15803d;color:white;">Available</span>
+          </div>
+          <div class="book-info">
+            <div class="book-title">Artificial Intelligence: A Modern Approach</div>
+            <div class="book-author">Stuart Russell, Peter Norvig</div>
+            <div class="book-meta">
+              <span class="book-copies">3 copies left</span>
+              <button class="btn btn-primary btn-sm">Issue</button>
+            </div>
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-cover" style="background:linear-gradient(135deg,#ccfbf1,#99f6e4)">
+            📓
+            <span class="book-status" style="background:#15803d;color:white;">E-Book</span>
+          </div>
+          <div class="book-info">
+            <div class="book-title">Clean Code: A Handbook of Agile Craftsmanship</div>
+            <div class="book-author">Robert C. Martin</div>
+            <div class="book-meta">
+              <span class="book-copies" style="color:var(--accent-teal)">∞ digital</span>
+              <button class="btn btn-primary btn-sm">Read</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issued Books -->
+      <div style="margin-top:28px;">
+        <div class="section-header" style="margin-bottom:14px;">
+          <div class="section-title">My Issued Books</div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Author</th>
+                  <th>Issue Date</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600;color:var(--gray-900)">Introduction to Algorithms (4th Ed.)</td>
+                  <td>CLRS</td>
+                  <td>Mar 5, 2026</td>
+                  <td><span style="color:var(--accent-amber);font-weight:600;">Mar 26, 2026</span></td>
+                  <td><span class="badge badge-amber">Due in 7d</span></td>
+                  <td><button class="btn btn-secondary btn-sm">Renew</button></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:var(--gray-900)">Operating System Concepts (10th Ed.)</td>
+                  <td>Silberschatz et al.</td>
+                  <td>Mar 10, 2026</td>
+                  <td><span style="color:var(--gray-700);font-weight:600;">Mar 31, 2026</span></td>
+                  <td><span class="badge badge-blue">Active</span></td>
+                  <td><button class="btn btn-secondary btn-sm">Return</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div id="view-profile" class="view">
+      <div class="profile-header">
+        <div class="profile-avatar-lg">AK</div>
+        <div class="profile-details">
+          <div class="profile-name">Arjun Tendulkar</div>
+          <div class="profile-id">Student ID: 2023CSE047 · Roll No. 35 · Section B</div>
+          <div class="profile-tags">
+            <span class="profile-tag">CSE — Sem 5</span>
+            <span class="profile-tag">CGPA 8.4</span>
+            <span class="profile-tag">Batch 2023–27</span>
+          </div>
+        </div>
+        <button class="btn btn-white" style="margin-left:auto">✏️ Edit Profile</button>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Personal Information</div></div>
+          <div style="padding:20px 24px;display:grid;gap:14px;">
+            <div class="form-row">
+              <div><div class="form-label">Full Name</div><input class="form-input" value="Arjun Tendulkar" readonly></div>
+              <div><div class="form-label">Student ID</div><input class="form-input" value="2023CSE047" readonly></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Email</div><input class="form-input" value="arjun.kumar@edunexus.ac.in" readonly></div>
+              <div><div class="form-label">Phone</div><input class="form-input" value="+91 98765 43210" readonly></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-label">Department</div><input class="form-input" value="Computer Science & Engineering" readonly></div>
+              <div><div class="form-label">Year / Semester</div><input class="form-input" value="3rd Year / 5th Semester" readonly></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Academic Summary</div></div>
+          <div style="padding:20px 24px;display:grid;gap:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-100)">
+              <span style="font-size:14px;color:var(--gray-600);font-weight:500;">Overall CGPA</span>
+              <span style="font-size:22px;font-weight:800;color:var(--blue-600)">8.4 / 10</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-100)">
+              <span style="font-size:14px;color:var(--gray-600);font-weight:500;">Attendance</span>
+              <span style="font-size:16px;font-weight:700;color:var(--accent-emerald)">88.4%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-100)">
+              <span style="font-size:14px;color:var(--gray-600);font-weight:500;">Credits Earned</span>
+              <span style="font-size:16px;font-weight:700;color:var(--gray-900)">96 / 160</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+              <span style="font-size:14px;color:var(--gray-600);font-weight:500;">Backlogs</span>
+              <span style="font-size:16px;font-weight:700;color:var(--accent-emerald)">None</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div id="view-settings" class="view">
+      <div class="section-title" style="margin-bottom:24px;">Settings</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Notifications</div></div>
+          <div style="padding:20px 24px;display:grid;gap:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><div style="font-size:14px;font-weight:600;">Assignment Reminders</div><div style="font-size:12.5px;color:var(--gray-500)">Get notified 24h before due dates</div></div>
+              <div style="width:44px;height:24px;border-radius:12px;background:var(--blue-500);cursor:pointer;position:relative;"><div style="width:18px;height:18px;border-radius:50%;background:white;position:absolute;top:3px;right:3px;"></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><div style="font-size:14px;font-weight:600;">Grade Published</div><div style="font-size:12.5px;color:var(--gray-500)">Notify when new grades are posted</div></div>
+              <div style="width:44px;height:24px;border-radius:12px;background:var(--blue-500);cursor:pointer;position:relative;"><div style="width:18px;height:18px;border-radius:50%;background:white;position:absolute;top:3px;right:3px;"></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><div style="font-size:14px;font-weight:600;">Library Due Alerts</div><div style="font-size:12.5px;color:var(--gray-500)">Remind 3 days before book is due</div></div>
+              <div style="width:44px;height:24px;border-radius:12px;background:var(--blue-500);cursor:pointer;position:relative;"><div style="width:18px;height:18px;border-radius:50%;background:white;position:absolute;top:3px;right:3px;"></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><div style="font-size:14px;font-weight:600;">Announcements</div><div style="font-size:12.5px;color:var(--gray-500)">College-wide notifications</div></div>
+              <div style="width:44px;height:24px;border-radius:12px;background:var(--gray-200);cursor:pointer;position:relative;"><div style="width:18px;height:18px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Preferences</div></div>
+          <div style="padding:20px 24px;display:grid;gap:16px;">
+            <div class="form-group">
+              <div class="form-label">Language</div>
+              <select class="form-select"><option>English</option><option>हिंदी</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Timezone</div>
+              <select class="form-select"><option>Asia/Kolkata (IST +5:30)</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Academic Year Display</div>
+              <select class="form-select"><option>2025–26</option><option>2024–25</option></select>
+            </div>
+            <button class="btn btn-primary" style="width:fit-content;">Save Preferences</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ═══════════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════════ -->
+
+<!-- Submit Assignment Modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📤 Submit Assignment</div>
+      <button class="modal-close" onclick="closeModal('submitModal')">×</button>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Assignment</div>
+      <select class="form-select">
+        <option>Data Structures Lab Report — CS301</option>
+        <option>Calculus Problem Set 4 — MA201</option>
+        <option>Essay: Networking Protocols — CS305</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Upload File</div>
+      <div style="border:2px dashed var(--gray-200);border-radius:var(--radius-md);padding:28px;text-align:center;background:var(--gray-50);cursor:pointer;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--blue-400)'" onmouseout="this.style.borderColor='var(--gray-200)'">
+        <div style="font-size:32px;margin-bottom:8px;">📁</div>
+        <div style="font-size:14px;font-weight:600;color:var(--gray-700)">Click to upload or drag & drop</div>
+        <div style="font-size:12.5px;color:var(--gray-400);margin-top:4px;">PDF, DOC, DOCX, Images · Max 10MB</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Comments (optional)</div>
+      <textarea class="form-textarea" placeholder="Add any notes for your professor…"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('submitModal')">Cancel</button>
+      <button class="btn btn-primary">Submit Assignment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post Announcement Modal -->
+<div class="modal-overlay" id="annModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📢 Post Announcement</div>
+      <button class="modal-close" onclick="closeModal('annModal')">×</button>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Title</div>
+      <input class="form-input" placeholder="Announcement title…">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <div class="form-label">Category</div>
+        <select class="form-select">
+          <option>Academic</option><option>Exam</option><option>Event</option><option>Placement</option><option>Library</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Audience</div>
+        <select class="form-select">
+          <option>All Students</option><option>CSE Department</option><option>Specific Course</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Message</div>
+      <textarea class="form-textarea" placeholder="Write your announcement…" style="min-height:110px;"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('annModal')">Cancel</button>
+      <button class="btn btn-primary">Post Announcement</button>
+    </div>
+  </div>
+</div>
+
+<!-- Browse Courses Modal -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal" style="width:600px;">
+    <div class="modal-header">
+      <div class="modal-title">📚 Browse Elective Courses</div>
+      <button class="modal-close" onclick="closeModal('courseModal')">×</button>
+    </div>
+    <input class="form-input" placeholder="Search electives…" style="margin-bottom:16px;">
+    <div style="display:grid;gap:12px;">
+      <div style="display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor='var(--blue-400)'" onmouseout="this.style.borderColor='var(--gray-200)'">
+        <div style="font-size:28px;">🤖</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">Deep Learning Fundamentals</div>
+          <div style="font-size:12.5px;color:var(--gray-500);">Dr. Vikram Singh · 3 Credits · Mon/Wed 3–4:30PM</div>
+        </div>
+        <span class="badge badge-emerald">Open</span>
+        <button class="btn btn-primary btn-sm">Enroll</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor='var(--blue-400)'" onmouseout="this.style.borderColor='var(--gray-200)'">
+        <div style="font-size:28px;">🔐</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">Cybersecurity Essentials</div>
+          <div style="font-size:12.5px;color:var(--gray-500);">Prof. D. Shah · 3 Credits · Tue/Thu 2–3:30PM</div>
+        </div>
+        <span class="badge badge-amber">3 seats left</span>
+        <button class="btn btn-primary btn-sm">Enroll</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);">
+        <div style="font-size:28px;">📱</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">Mobile App Development</div>
+          <div style="font-size:12.5px;color:var(--gray-500);">Dr. Ananya Roy · 3 Credits · Fri 10AM–1PM</div>
+        </div>
+        <span class="badge badge-rose">Full</span>
+        <button class="btn btn-secondary btn-sm">Waitlist</button>
+      </div>
+    </div>
+    <div style="margin-top:16px;text-align:right;">
+      <button class="btn btn-ghost" onclick="closeModal('courseModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications Modal -->
+<div class="modal-overlay" id="notifModal">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header">
+      <div class="modal-title">🔔 Notifications</div>
+      <button class="modal-close" onclick="closeModal('notifModal')">×</button>
+    </div>
+    <div style="display:grid;gap:0;">
+      <div style="padding:14px 0;border-bottom:1px solid var(--gray-100);display:flex;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--blue-50);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📊</div>
+        <div><div style="font-size:13.5px;font-weight:600;color:var(--gray-900);">Grade posted: CS301 Quiz 3 — 92/100</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Today, 4:30 PM</div></div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid var(--gray-100);display:flex;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#fff1f2;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">⚠️</div>
+        <div><div style="font-size:13.5px;font-weight:600;color:var(--gray-900);">Assignment due tomorrow: DS Lab Report</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Today, 8:00 AM</div></div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid var(--gray-100);display:flex;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#ecfdf5;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📢</div>
+        <div><div style="font-size:13.5px;font-weight:600;color:var(--gray-900);">New announcement: Mid-sem schedule</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px;">2 hours ago</div></div>
+      </div>
+      <div style="padding:14px 0;display:flex;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#fffbeb;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📚</div>
+        <div><div style="font-size:13.5px;font-weight:600;color:var(--gray-900);">Library: Book due in 7 days</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Yesterday</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const views = ['dashboard','courses','assignments','gradebook','announcements','library','profile','settings'];
+
+  function navigate(view) {
+    views.forEach(v => {
+      document.getElementById('view-' + v)?.classList.remove('active');
+    });
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const target = document.getElementById('view-' + view);
+    if (target) {
+      target.classList.add('active');
+    }
+    const labels = {
+      dashboard: 'Dashboard', courses: 'My Courses', assignments: 'Assignments',
+      gradebook: 'Gradebook', announcements: 'Announcements', library: 'Library',
+      profile: 'Profile', settings: 'Settings'
+    };
+    document.getElementById('pageTitle').textContent = labels[view] || view;
+    document.getElementById('breadcrumbCurrent').textContent = labels[view] || view;
+
+    // Highlight nav item
+    document.querySelectorAll('.nav-item').forEach(n => {
+      const txt = n.textContent.trim().toLowerCase();
+      if (txt.includes(view) || (view === 'dashboard' && txt.includes('dashboard'))) {
+        n.classList.add('active');
+      }
+    });
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  // Chip filter toggle
+  document.querySelectorAll('.chip-filter').forEach(group => {
+    group.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      });
+    });
+  });
+
+  // Tabs toggle
+  document.querySelectorAll('.tabs').forEach(tabs => {
+    tabs.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+  });
+</script>
+</body>
+</html>
