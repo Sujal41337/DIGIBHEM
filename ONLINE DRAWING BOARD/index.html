@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inkboard — Online Drawing Board</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Socket.IO client (CDN — swap with your server URL for real-time collab) -->
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" defer></script>
+  <!-- Google Fonts: Syne (display) + DM Mono (labels) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── Cursor preview circle (follows the mouse pointer) ── -->
+  <div id="cursor-preview" aria-hidden="true"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       TOP TOOLBAR
+  ══════════════════════════════════════════════════════ -->
+  <header id="toolbar" role="toolbar" aria-label="Drawing toolbar">
+
+    <!-- Brand wordmark -->
+    <div class="brand" aria-label="Inkboard">
+      <svg class="brand-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <path d="M4 24 L10 10 L18 18 L22 8 L26 24"
+              stroke="currentColor" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="10" r="2.8" fill="currentColor"/>
+      </svg>
+      <span class="brand-name">Inkboard</span>
+    </div>
+
+    <!-- ── Drawing tools ── -->
+    <div class="tool-group" role="group" aria-label="Drawing tools">
+
+      <button class="tool-btn active" id="btn-pencil"
+              title="Pencil  [P]" data-tool="pencil" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+        </svg>
+        <span>Pencil</span>
+      </button>
+
+      <button class="tool-btn" id="btn-eraser"
+              title="Eraser  [E]" data-tool="eraser" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 20H7L3 16l11-11 6 6Z"/>
+          <path d="m6 17 3-3"/>
+        </svg>
+        <span>Eraser</span>
+      </button>
+
+    </div>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <!-- ── Color & size ── -->
+    <div class="tool-group" role="group" aria-label="Color and brush size">
+
+      <!-- Native color picker behind a styled swatch -->
+      <label class="color-wrap" title="Pick color  [C]" aria-label="Stroke color">
+        <input type="color" id="color-picker" value="#1a1a2e" />
+        <span class="color-swatch" id="color-swatch"></span>
+      </label>
+
+      <!-- Quick-access preset swatches -->
+      <div class="color-presets" role="group" aria-label="Color presets">
+        <button class="preset-color" style="--c:#1a1a2e" data-color="#1a1a2e" title="Ink Black"></button>
+        <button class="preset-color" style="--c:#e63946" data-color="#e63946" title="Crimson"></button>
+        <button class="preset-color" style="--c:#f4a261" data-color="#f4a261" title="Amber"></button>
+        <button class="preset-color" style="--c:#2a9d8f" data-color="#2a9d8f" title="Teal"></button>
+        <button class="preset-color" style="--c:#457b9d" data-color="#457b9d" title="Ocean"></button>
+        <button class="preset-color" style="--c:#7b2d8b" data-color="#7b2d8b" title="Violet"></button>
+        <button class="preset-color light" style="--c:#ffffff" data-color="#ffffff" title="White"></button>
+      </div>
+
+      <!-- Brush size slider -->
+      <div class="size-wrap" aria-label="Brush size">
+        <svg class="size-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <circle cx="8" cy="8" r="4.5"/>
+        </svg>
+        <input type="range" id="brush-size" min="1" max="60" value="6"
+               aria-label="Brush size" aria-valuemin="1" aria-valuemax="60" aria-valuenow="6"/>
+        <span id="size-label" class="size-label">6</span>
+      </div>
+
+    </div>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <!-- ── History actions ── -->
+    <div class="tool-group" role="group" aria-label="History">
+
+      <button class="tool-btn" id="btn-undo" title="Undo  [Ctrl+Z]" aria-label="Undo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7v6h6"/>
+          <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+        </svg>
+        <span>Undo</span>
+      </button>
+
+      <button class="tool-btn" id="btn-redo" title="Redo  [Ctrl+Y / Ctrl+Shift+Z]" aria-label="Redo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 7v6h-6"/>
+          <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
+        </svg>
+        <span>Redo</span>
+      </button>
+
+      <button class="tool-btn danger" id="btn-clear" title="Clear canvas" aria-label="Clear canvas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6"/><path d="M14 11v6"/>
+          <path d="M9 6V4h6v2"/>
+        </svg>
+        <span>Clear</span>
+      </button>
+
+    </div>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <!-- ── File actions ── -->
+    <div class="tool-group" role="group" aria-label="File actions">
+
+      <button class="tool-btn accent" id="btn-save"
+              title="Save as PNG  [Ctrl+S]" aria-label="Save drawing as PNG">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>Save</span>
+      </button>
+
+      <!-- Label acts as the file-input trigger -->
+      <label class="tool-btn" id="btn-load" title="Load image onto canvas" aria-label="Load image">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <span>Load</span>
+        <input type="file" id="file-input" accept="image/*" hidden />
+      </label>
+
+    </div>
+
+    <!-- Real-time collab status badge -->
+    <div class="collab-badge"
+         title="Real-time collab ready — connect a Socket.IO server to activate"
+         aria-label="Collaboration status">
+      <span class="collab-dot" aria-hidden="true"></span>
+      <span class="collab-text">Collab ready</span>
+    </div>
+
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════
+       CANVAS AREA
+  ══════════════════════════════════════════════════════ -->
+  <main id="canvas-container" aria-label="Drawing canvas area">
+    <canvas id="drawing-canvas" role="img" aria-label="Drawing canvas"></canvas>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════
+       STATUS BAR
+  ══════════════════════════════════════════════════════ -->
+  <footer id="statusbar" aria-live="polite" aria-atomic="false">
+    <span id="status-tool">✏ Pencil</span>
+    <span id="status-coords">x: 0  y: 0</span>
+    <span id="status-size">Size: 6 px</span>
+    <span id="status-history">History: 0</span>
+  </footer>
+
+  <!-- ══════════════════════════════════════════════════════
+       CLEAR CONFIRMATION MODAL
+  ══════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" role="dialog" aria-modal="true"
+       aria-labelledby="modal-title" hidden>
+    <div id="modal">
+      <h2 id="modal-title">Clear the canvas?</h2>
+      <p>This will permanently erase everything. This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="tool-btn">Cancel</button>
+        <button id="modal-confirm" class="tool-btn danger">Yes, clear it</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
