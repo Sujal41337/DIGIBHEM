@@ -1,0 +1,28 @@
+# EduNexus LMS — .gitignore
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
+# Build output (if added later)
+dist/
+build/
+
+# Node (if added later)
+node_modules/
+package-lock.json
